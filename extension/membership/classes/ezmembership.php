@@ -32,11 +32,11 @@ class eZMembership
     /*
       \static
     */
-    function parentNodeIDArray( &$userObject )
+    static function parentNodeIDArray( $userObject )
     {
         include_once( 'kernel/classes/eznodeassignment.php' );
         $nodeAssignmentList = eZNodeAssignment::fetchForObject( $userObject->attribute( 'id' ), $userObject->attribute( 'current_version' ), 0, false );
-        $assignedNodes =& $userObject->assignedNodes();
+        $assignedNodes = $userObject->assignedNodes();
 
         $parentNodeIDArray = array();
 
@@ -63,10 +63,10 @@ class eZMembership
     /*
       \static
     */
-    function checkAccess( $functionName, $object, $returnAccessList = false )
+    static function checkAccess( $functionName, $object, $returnAccessList = false )
     {
         include_once( 'kernel/classes/datatypes/ezuser/ezuser.php' );
-        $user =& eZUser::currentUser();
+        $user = eZUser::currentUser();
         $userID = $user->attribute( 'contentobject_id' );
 
         $accessResult = $user->hasAccessTo( 'membership' , $functionName );

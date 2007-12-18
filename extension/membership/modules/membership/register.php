@@ -24,40 +24,40 @@
 // ## END COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
 //
 
-$Module =& $Params['Module'];
+$Module = $Params['Module'];
 $groupID = $Params['GroupID'];
 
 if ( !is_numeric( $groupID ) )
 {
-    return $Module->handleError( EZ_ERROR_KERNEL_NOT_AVAILABLE, 'kernel' );
+    return $Module->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
 }
 
 include_once( 'kernel/classes/ezcontentobject.php' );
-$group =& eZContentObject::fetch( $groupID );
+$group = eZContentObject::fetch( $groupID );
 
 if ( !is_object( $group ) )
 {
-    return $Module->handleError( EZ_ERROR_KERNEL_NOT_AVAILABLE, 'kernel' );
+    return $Module->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
 }
 
-$groupNode =& $group->attribute( 'main_node' );
+$groupNode = $group->attribute( 'main_node' );
 
 if ( !is_object( $groupNode ) )
 {
-    return $Module->handleError( EZ_ERROR_KERNEL_NOT_AVAILABLE, 'kernel' );
+    return $Module->handleError( eZError::KERNEL_NOT_AVAILABLE, 'kernel' );
 }
 
 include_once( 'extension/membership/classes/ezmembership.php' );
 $accessAllowed = eZMembership::checkAccess( 'register', $group );
 if ( !$accessAllowed )
 {
-    return $Module->handleError( EZ_ERROR_KERNEL_ACCESS_DENIED, 'kernel' );
+    return $Module->handleError( eZError::KERNEL_ACCESS_DENIED, 'kernel' );
 }
 
 include_once( 'kernel/classes/datatypes/ezuser/ezuser.php' );
-$user =& eZUser::currentUser();
+$user = eZUser::currentUser();
 $userID = $user->attribute( 'contentobject_id' );
-$userObject =& $user->attribute( 'contentobject' );
+$userObject = $user->attribute( 'contentobject' );
 
 include_once( 'extension/membership/classes/ezmembership.php' );
 $parentNodeIDArray = eZMembership::parentNodeIDArray( $userObject );
@@ -68,7 +68,7 @@ eZDebugSetting::writeDebug( 'membership', 'parent node id array: ' . implode( ',
 if ( in_array( $groupNode->attribute( 'node_id' ), $parentNodeIDArray ) )
 {
     include_once( 'kernel/common/template.php' );
-    $tpl =& templateInit();
+    $tpl = templateInit();
 
     $tpl->setVariable( 'group', $group );
 
@@ -100,10 +100,10 @@ if ( $currentAction == 'Register' )
 
         switch ( $operationResult['status' ] )
         {
-            case EZ_MODULE_OPERATION_CONTINUE:
+            case eZModuleOperationInfo::STATUS_CONTINUE:
             {
                 include_once( 'kernel/common/template.php' );
-                $tpl =& templateInit();
+                $tpl = templateInit();
 
                 $tpl->setVariable( 'group', $group );
 
@@ -111,7 +111,7 @@ if ( $currentAction == 'Register' )
                 return;
             } break;
 
-            case EZ_MODULE_OPERATION_CANCELED:
+            case eZModuleOperationInfo::STATUS_CANCELLED:
             {
                 if ( isset( $operationResult['redirect_url'] ) )
                 {
@@ -119,7 +119,7 @@ if ( $currentAction == 'Register' )
                 }
                 else if ( isset( $operationResult['result'] ) )
                 {
-                    $result =& $operationResult['result'];
+                    $result = $operationResult['result'];
                     $resultContent = false;
                     if ( is_array( $result ) )
                     {
@@ -147,11 +147,11 @@ if ( $currentAction == 'Register' )
                 return;
             } break;
 
-            case EZ_MODULE_OPERATION_HALTED:
+            case eZModuleOperationInfo::STATUS_HALTED:
             {
                 if ( isset( $operationResult['result'] ) )
                 {
-                    $result =& $operationResult['result'];
+                    $result = $operationResult['result'];
                     $resultContent = false;
                     if ( is_array( $result ) )
                     {
@@ -161,12 +161,14 @@ if ( $currentAction == 'Register' )
                             $Result['path'] = $result['path'];
                     }
                     else
-                        $resultContent =& $result;
+                    {
+                        $resultContent = $result;
+                    }
                     // Detect defer to cron and show message
                     if ( strpos( $resultContent, 'Deffered to cron' ) === 0 )
                     {
                         include_once( 'kernel/common/template.php' );
-                        $tpl =& templateInit();
+                        $tpl = templateInit();
 
                         $tpl->setVariable( 'group', $group );
 
@@ -174,7 +176,7 @@ if ( $currentAction == 'Register' )
                     }
                     else
                     {
-                        $Result['content'] =& $resultContent;
+                        $Result['content'] = $resultContent;
                     }
                 }
 
@@ -185,7 +187,7 @@ if ( $currentAction == 'Register' )
 }
 
 include_once( 'kernel/common/template.php' );
-$tpl =& templateInit();
+$tpl = templateInit();
 
 $tpl->setVariable( 'group', $group );
 

@@ -34,8 +34,8 @@ class MembershipOperationCollection
     function addLocation( $groupID, $userID )
     {
         include_once( 'kernel/classes/ezcontentobject.php' );
-        $user =& eZContentObject::fetch( $userID );
-        $group =& eZContentObject::fetch( $groupID );
+        $user = eZContentObject::fetch( $userID );
+        $group = eZContentObject::fetch( $groupID );
 
         $selectedNodeID = $group->attribute( 'main_node_id' );
 
@@ -50,10 +50,10 @@ class MembershipOperationCollection
             eZDebugSetting::writeDebug( 'membership', 'no location yet, adding one', 'MembershipOperationCollection::addLocation' );
 
             include_once( 'lib/ezdb/classes/ezdb.php');
-            $db =& eZDB::instance();
+            $db = eZDB::instance();
             $db->begin();
 
-            $insertedNode =& $user->addLocation( $selectedNodeID, true );
+            $insertedNode = $user->addLocation( $selectedNodeID, true );
 
             $insertedNode->setAttribute( 'contentobject_is_published', 1 );
             $insertedNode->setAttribute( 'main_node_id', $user->attribute( 'main_node_id' ) );

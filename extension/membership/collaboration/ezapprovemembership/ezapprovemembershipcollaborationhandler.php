@@ -47,17 +47,17 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
                                    ezi18n( 'extension/membership/collaboration', 'Membership approval' ),
                                    array( 'use-messages' => true,
                                           'notification-types' => true,
-                                          'notification-collection-handling' => EZ_COLLABORATION_NOTIFICATION_COLLECTION_PER_PARTICIPATION_ROLE ) );
+                                          'notification-collection-handling' => eZCollaborationItemHandler::NOTIFICATION_COLLECTION_PER_PARTICIPATION_ROLE ) );
 
     }
 
     function notificationParticipantTemplate( $participantRole )
     {
-        if ( $participantRole == EZ_COLLABORATION_PARTICIPANT_ROLE_APPROVER )
+        if ( $participantRole == eZCollaborationItemParticipantLink::ROLE_APPROVER )
         {
             return 'approver.tpl';
         }
-        else if ( $participantRole == EZ_COLLABORATION_PARTICIPANT_ROLE_AUTHOR )
+        else if ( $participantRole == eZCollaborationItemParticipantLink::ROLE_AUTHOR )
         {
             return 'author.tpl';
         }
@@ -67,7 +67,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
         }
     }
 
-    function createApproval( $groupID, $userID )
+    static function createApproval( $groupID, $userID )
     {
         // create a collaboration item
         include_once( 'kernel/classes/ezcollaborationitem.php' );
@@ -83,9 +83,9 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
 
         // link the participants to the collaboration item
         $participantList = array( array( 'id' => array( $userID ),
-                                         'role' => EZ_COLLABORATION_PARTICIPANT_ROLE_AUTHOR ),
+                                         'role' => eZCollaborationItemParticipantLink::ROLE_AUTHOR ),
                                   array( 'id' => array( $approverID ),
-                                         'role' => EZ_COLLABORATION_PARTICIPANT_ROLE_APPROVER ) );
+                                         'role' => eZCollaborationItemParticipantLink::ROLE_APPROVER ) );
 
         foreach ( $participantList as $participantItem )
         {
@@ -93,10 +93,10 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
             {
                 $participantRole = $participantItem['role'];
                 $link = eZCollaborationItemParticipantLink::create( $collaborationID, $participantID,
-                                                                    $participantRole, EZ_COLLABORATION_PARTICIPANT_TYPE_USER );
+                                                                    $participantRole, eZCollaborationItemParticipantLink::TYPE_USER );
                 $link->store();
 
-                $profile =& eZCollaborationProfile::instance( $participantID );
+                $profile = eZCollaborationProfile::instance( $participantID );
                 $collabGroupID = $profile->attribute( 'main_group' );
                 eZCollaborationItemGroupLink::addItem( $collabGroupID, $collaborationID, $participantID );
             }
@@ -110,7 +110,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
     /*
       \reimp
     */
-    function &content( &$collaborationItem )
+    function content( $collaborationItem )
     {
         $content = array( 'group_id' => $collaborationItem->attribute( 'data_int1' ),
                           'user_id' => $collaborationItem->attribute( 'data_int2' ),
@@ -122,7 +122,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
       \reimp
       Updates the last_read time of the participant link
     */
-    function readItem( &$collaborationItem )
+    function readItem( $collaborationItem, $viewMode = false )
     {
         $collaborationItem->setLastRead();
     }
@@ -131,7 +131,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
      \reimp
      \return the number of messages for the approve item.
     */
-    function messageCount( &$collaborationItem )
+    function messageCount( $collaborationItem )
     {
         include_once( 'kernel/classes/ezcollaborationitemmessagelink.php' );
         return eZCollaborationItemMessageLink::fetchItemCount( array( 'item_id' => $collaborationItem->attribute( 'id' ) ) );
@@ -141,7 +141,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
      \static
      \return the status of the approval collaboration item \a $approvalID.
     */
-    function checkApproval( $approvalID )
+    static function checkApproval( $approvalID )
     {
         include_once( 'kernel/classes/ezcollaborationitem.php' );
         $collaborationItem = eZCollaborationItem::fetch( $approvalID );
@@ -156,10 +156,10 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
      \reimp
      \return the number of unread messages for the membership approve item.
     */
-    function unreadMessageCount( &$collaborationItem )
+    function unreadMessageCount( $collaborationItem )
     {
         $lastRead = 0;
-        $status =& $collaborationItem->attribute( 'user_status' );
+        $status = $collaborationItem->attribute( 'user_status' );
         if ( $status )
         {
             $lastRead = $status->attribute( 'last_read' );
@@ -173,7 +173,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
      \reimp
      Adds a new comment, approves the membership or denies the membership.
     */
-    function handleCustomAction( &$module, &$collaborationItem )
+    function handleCustomAction( $module, $collaborationItem )
     {
         include_once( 'lib/ezutils/classes/ezdebugsetting.php' );
         $redirectView = 'item';
@@ -184,9 +184,9 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
         {
             eZDebugSetting::writeDebug( 'membership', 'custom action approve or deny', 'eZApproveMembershipCollaborationHandler::handleCustomAction' );
             // check current user's participation role
-            $user =& eZUser::currentUser();
-            $userID =& $user->attribute( 'contentobject_id' );
-            $participantList =& eZCollaborationItemParticipantLink::fetchParticipantList( array( 'item_id' =>
+            $user = eZUser::currentUser();
+            $userID = $user->attribute( 'contentobject_id' );
+            $participantList = eZCollaborationItemParticipantLink::fetchParticipantList( array( 'item_id' =>
             $collaborationItem->attribute( 'id' ) ) );
 
             $canApprove = false;
@@ -194,7 +194,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
             foreach( $participantList as $participant )
             {
                 if ( $participant->ParticipantID == $userID &&
-                    $participant->ParticipantRole == EZ_COLLABORATION_PARTICIPANT_ROLE_APPROVER )
+                    $participant->ParticipantRole == eZCollaborationItemParticipantLink::ROLE_APPROVER )
                 {
                     $canApprove = true;
                 }
@@ -213,7 +213,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
             }
 
             $collaborationItem->setAttribute( 'data_int3', $status );
-            $collaborationItem->setAttribute( 'status', EZ_COLLABORATION_STATUS_INACTIVE );
+            $collaborationItem->setAttribute( 'status', eZCollaborationItem::STATUS_INACTIVE );
             $timestamp = time();
             $collaborationItem->setAttribute( 'modified', $timestamp );
             $collaborationItem->setIsActive( false );

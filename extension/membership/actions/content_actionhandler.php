@@ -1,6 +1,6 @@
 <?php
 
-function membership_ContentActionHandler( &$Module, $http, $objectID )
+function membership_ContentActionHandler( $Module, $http, $objectID )
 {
     if ( $http->hasPostVariable( 'MembershipRegisterButton' ) )
     {
