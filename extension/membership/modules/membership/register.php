@@ -75,8 +75,8 @@ if ( in_array( $groupNode->attribute( 'node_id' ), $parentNodeIDArray ) )
     $Result = array();
     $Result['content'] = $tpl->fetch( 'design:membership/register_alreadymember.tpl' );
     $Result['path'] = array(
-        array( 'text' => ezi18n( 'extension/membership', 'Membership' ), 'url' => false ),
-        array( 'text' => ezi18n( 'extension/membership', 'Register' ), 'url' => false ) );
+        array( 'text' => ezpI18n::tr( 'extension/membership', 'Membership' ), 'url' => false ),
+        array( 'text' => ezpI18n::tr( 'extension/membership', 'Register' ), 'url' => false ) );
     return;
 }
 
@@ -95,8 +95,8 @@ if ( $currentAction == 'Register' )
     {
         $Result = array();
         $Result['path'] = array(
-            array( 'text' => ezi18n( 'extension/membership', 'Membership' ), 'url' => false ),
-            array( 'text' => ezi18n( 'extension/membership', 'Register' ), 'url' => false ) );
+            array( 'text' => ezpI18n::tr( 'extension/membership', 'Membership' ), 'url' => false ),
+            array( 'text' => ezpI18n::tr( 'extension/membership', 'Register' ), 'url' => false ) );
 
         switch ( $operationResult['status' ] )
         {
@@ -194,7 +194,7 @@ $tpl->setVariable( 'group', $group );
 $Result = array();
 $Result['content'] = $tpl->fetch( 'design:membership/register.tpl' );
 $Result['path'] = array(
-    array( 'text' => ezi18n( 'extension/membership', 'Membership' ), 'url' => false ),
-    array( 'text' => ezi18n( 'extension/membership', 'Register' ), 'url' => false ) );
+    array( 'text' => ezpI18n::tr( 'extension/membership', 'Membership' ), 'url' => false ),
+    array( 'text' => ezpI18n::tr( 'extension/membership', 'Register' ), 'url' => false ) );
 
 ?>
