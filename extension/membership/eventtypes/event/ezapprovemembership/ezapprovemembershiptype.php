@@ -33,7 +33,7 @@ class eZApproveMembershipType extends eZWorkflowEventType
 {
     function eZApproveMembershipType()
     {
-        $this->eZWorkflowEventType( 'ezapprovemembership', ezi18n( 'extension/membership/eventtypes', 'Approve membership' ) );
+        $this->eZWorkflowEventType( 'ezapprovemembership', ezpI18n::tr( 'extension/membership/eventtypes', 'Approve membership' ) );
         // limit workflows which use this event to be used only on the membership pre-register trigger
         $this->setTriggerTypes( array( 'membership' => array( 'register' => array( 'before' ) ) ) );
     }
