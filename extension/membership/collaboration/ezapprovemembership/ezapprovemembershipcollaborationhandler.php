@@ -44,7 +44,7 @@ class eZApproveMembershipCollaborationHandler extends eZCollaborationItemHandler
     function eZApproveMembershipCollaborationHandler()
     {
         $this->eZCollaborationItemHandler( 'ezapprovemembership',
-                                   ezi18n( 'extension/membership/collaboration', 'Membership approval' ),
+                                   ezpI18n::tr( 'extension/membership/collaboration', 'Membership approval' ),
                                    array( 'use-messages' => true,
                                           'notification-types' => true,
                                           'notification-collection-handling' => eZCollaborationItemHandler::NOTIFICATION_COLLECTION_PER_PARTICIPATION_ROLE ) );
